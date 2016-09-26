@@ -18,7 +18,7 @@ class Dashboard extends Component {
 
   render() {
     let titleConfig = { title: 'Dashboard', tintColor: 'white' };
-
+    let { user } = this.props;
     return (
       <TabBarIOS>
         <TabBarItemIOS
@@ -43,7 +43,7 @@ class Dashboard extends Component {
           iconName='ios-person'
           onPress={() => this.setState({ selectedTab: 'Profile' })}
         >
-          <ProfileView />
+          <ProfileView currentUser={user}/>
         </TabBarItemIOS>
       </TabBarIOS>
     );

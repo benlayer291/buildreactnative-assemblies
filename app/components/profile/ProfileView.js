@@ -12,7 +12,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import NavigationBar from 'react-native-navbar';
 import Colors from '../../styles/colors';
-import { currentUser } from '../../fixtures';
+// import { currentUser } from '../../fixtures';
 import { globals, profileStyles } from '../../styles';
 
 const styles = profileStyles;
@@ -20,6 +20,7 @@ const styles = profileStyles;
 class ProfileView extends Component{
   render(){
     let titleConfig = { title: 'Profile', tintColor: 'white' };
+    let { currentUser } = this.props;
 
     return (
       <View style={[globals.flexContainer, globals.inactive]}>

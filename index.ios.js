@@ -13,6 +13,18 @@ import Login from './app/components/accounts/Login';
 import { globals } from './app/styles';
 
 class Assemblies extends Component {
+  constructor() {
+    super();
+    this.updateUser = this.updateUser.bind(this);
+    this.state = {
+      user: null
+    };
+  }
+
+  updateUser() {
+    this.setState({ user: user });
+  }
+
   render() {
     return (
       <Navigator
@@ -24,9 +36,20 @@ class Assemblies extends Component {
               return (
                 <Register navigator={navigator} />
               );
+            case 'RegisterConfirmation':
+              return (
+                <RegisterConfirmation
+                  {...route}
+                  updateUser={this.updateUser}
+                  navigator={navigator}
+                />
+            );
             case 'Login':
               return (
-                <Login navigator={navigator} />
+                <Login 
+                  navigator={navigator}
+                  updateUser={this.updateUser} 
+                />
               );
             case 'Landing':
               return (
@@ -34,7 +57,11 @@ class Assemblies extends Component {
               );
             case 'Dashboard':
               return (
-                <Dashboard navigator={navigator} />
+                <Dashboard
+                  updateUser={this.updateUser}
+                  navigator={navigator}
+                  user={this.state.user}
+                />
               );
           }
         }} 
