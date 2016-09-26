@@ -434,6 +434,9 @@ export const landingStyles = StyleSheet.create({
     height: 90,
     width: 90
   },
+  icon: {
+    marginRight: 10,
+  },
 });
 
 export const formStyles = StyleSheet.create({

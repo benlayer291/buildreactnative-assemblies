@@ -8,6 +8,8 @@ import {
 
 import Landing from './app/components/Landing';
 import Dashboard from './app/components/Dashboard';
+import Register from './app/components/accounts/Register';
+import Login from './app/components/accounts/Login';
 import { globals } from './app/styles';
 
 class Assemblies extends Component {
@@ -18,6 +20,14 @@ class Assemblies extends Component {
         initialRoute={{ name: 'Landing' }}
         renderScene={(route, navigator) => {
           switch(route.name) {
+            case 'Register':
+              return (
+                <Register navigator={navigator} />
+              );
+            case 'Login':
+              return (
+                <Login navigator={navigator} />
+              );
             case 'Landing':
               return (
                 <Landing navigator={navigator} />

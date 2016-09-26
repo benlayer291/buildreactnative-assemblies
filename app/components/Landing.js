@@ -18,12 +18,19 @@ const styles = landingStyles;
 class Landing extends Component {
   constructor() {
     super();
-    this.visitDashboard = this.visitDashboard.bind(this);
+    this.visitLogin = this.visitLogin.bind(this);
+    this.visitRegister = this.visitRegister.bind(this);
   }
 
-  visitDashboard() {
+  visitLogin() {
     this.props.navigator.push({
-      name: 'Dashboard'
+      name: 'Login'
+    });
+  }
+
+  visitRegister() {
+    this.props.navigator.push({
+      name: 'Register'
     });
   }
 
@@ -51,12 +58,21 @@ class Landing extends Component {
           </Text>
         </View>
         <TouchableOpacity
-          style={globals.button}
-          onPress={this.visitDashboard}
+          style={[globals.button, globals.inactive, styles.loginButton]}
+          onPress={this.visitLogin}
         >
-          <Icon name='ios-person' size={36} color='white' />
+          <Icon style={styles.icon} name='ios-lock' size={36} color={Colors.brandPrimary} />
+          <Text style={[globals.buttonText, globals.primaryText]}>
+            Login
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={globals.button}
+          onPress={this.visitRegister}
+        >
+          <Icon style={styles.icon} name='ios-person' size={36} color='white' />
           <Text style={globals.buttonText}>
-            Go to Dashboard
+            Create an account
           </Text>
         </TouchableOpacity>
       </View>
