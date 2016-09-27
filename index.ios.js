@@ -15,10 +15,16 @@ import { globals } from './app/styles';
 class Assemblies extends Component {
   constructor() {
     super();
+    this.logout = this.logout.bind(this);
     this.updateUser = this.updateUser.bind(this);
     this.state = {
       user: null
     };
+  }
+
+  logout() {
+    this.nav.push({ name: 'Landing' });
+    this.updateUser(null);
   }
 
   updateUser(user) {
@@ -29,6 +35,7 @@ class Assemblies extends Component {
     return (
       <Navigator
         style={globals.flex}
+        ref={ (el) => this.nav = el }
         initialRoute={{ name: 'Landing' }}
         renderScene={(route, navigator) => {
           switch(route.name) {
@@ -58,6 +65,7 @@ class Assemblies extends Component {
             case 'Dashboard':
               return (
                 <Dashboard
+                  logout={this.logout}
                   updateUser={this.updateUser}
                   navigator={navigator}
                   user={this.state.user}
