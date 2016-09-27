@@ -54,11 +54,12 @@ class Login extends Component{
     })
     .then(response => response.json())
     .then(data => this.loginStatus(data))
-    .catch(err => this.connectionError())
+    .catch(err => this.connectionError(err))
     .done();
   }
 
   loginStatus(response) {
+    if (DEV) { console.log('Login status', response)}
     if (response.status === 401){
       this.setState({ errorMsg: 'Email or password was incorrect.' });
     } else {
@@ -67,13 +68,14 @@ class Login extends Component{
   }
 
   fetchUserInfo(sid){
+    if (DEV) { console.log('Getting current user info', sid) }
     fetch(`${API}/users/me`, { 
       method: 'GET',
       headers: extend(Headers, { 'Set-Cookie': `sid=${sid}`}) 
     })
     .then(response => response.json())
     .then(user => this.updateUserInfo(user))
-    .catch(err => this.connectionError())
+    .catch(err => this.connectionError(err))
     .done();
   }
 
@@ -83,7 +85,8 @@ class Login extends Component{
     this.props.navigator.push({ name: 'Dashboard' })
   }
 
-  connectionError(){
+  connectionError(err){
+    if (DEV) { console.log('Connection error', err); }
     this.setState({ errorMsg: 'Connection error.'})
   }
 

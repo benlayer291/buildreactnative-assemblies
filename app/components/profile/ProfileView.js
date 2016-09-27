@@ -18,7 +18,7 @@ import { globals, profileStyles } from '../../styles';
 const styles = profileStyles;
 
 class ProfileView extends Component{
-  render(){
+  render() {
     let titleConfig = { title: 'Profile', tintColor: 'white' };
     let { currentUser } = this.props;
 

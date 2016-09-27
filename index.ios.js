@@ -21,7 +21,7 @@ class Assemblies extends Component {
     };
   }
 
-  updateUser() {
+  updateUser(user) {
     this.setState({ user: user });
   }
 
