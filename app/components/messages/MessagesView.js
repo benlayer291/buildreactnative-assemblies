@@ -1,96 +1,95 @@
 'use strict';
 
 import React, { Component } from 'react';
-import { 
-  View, 
-  Text, 
-  Image, 
-  TouchableOpacity, 
-  ListView 
-} from 'react-native';
+import { Navigator } from 'react-native';
 
-import { find, isEqual } from 'underscore';
+import { flatten, uniq } from 'underscore';
 
-import moment from 'moment';
-import Icon from 'react-native-vector-icons/Ionicons';
-import NavigationBar from 'react-native-navbar';
+import { DEV, API } from '../../config';
 
-import { FakeConversations, FakeUsers, currentUser } from '../../fixtures';
+import Conversation from './Conversation';
+import Conversations from './Conversations';
 
-import { rowHasChanged } from '../../utilities';
+import { globals } from '../../styles';
 
-import Colors from '../../styles/colors';
-import { globals, messagesStyles } from '../../styles';
-
-const styles = messagesStyles;
 
 class MessagesView extends Component{
   constructor() {
     super();
-    this._renderRow = this._renderRow.bind(this);
-    this.dataSource = this.dataSource.bind(this);
+    this.state = {
+      conversations: [],
+      ready: false,
+      users: [],
+    };
   }
 
-  _renderRow(conversation) {
-    let userIDs = [ conversation.user1Id, conversation.user2Id];
-    let otherUserID = find(userIDs, (id) => !isEqual(id, currentUser.id));
-    let user = find(FakeUsers, ({ id }) => isEqual(id, otherUserID));
-
-    return (
-      <TouchableOpacity style={globals.flexContainer}>
-        <View style={globals.flexRow}>
-          <Image 
-            style={globals.avatar} 
-            source={{uri: user.avatar}}
-          />
-          <View style={globals.flex}>
-            <View style={globals.textContainer}>
-              <Text style={styles.h5}>
-                {user.firstName} {user.lastName}
-              </Text>
-              <Text style={styles.h6}>
-                {moment(conversation.lastMessageDate).fromNow()}
-              </Text>
-            </View>
-            <Text style={styles.h4}>
-              {conversation.lastMessageText.substring(0, 40)}...
-            </Text>
-          </View>
-          <View style={styles.arrowContainer}>
-            <Icon 
-              size={30} 
-              name="ios-arrow-forward" 
-              color={Colors.bodyTextLight}
-            />
-          </View>
-        </View>
-        <View style={styles.divider}/>
-      </TouchableOpacity>
-    );
+  componentDidMount() {
+    this._loadConversations();
   }
 
-  dataSource() {
-    return(
-      new ListView.DataSource({ rowHasChanged: rowHasChanged })
-      .cloneWithRows(FakeConversations)
-    );
+  _loadUsers(conversations) {
+    let userIds = uniq(flatten(conversations.map(c => [c.user1Id, c.user2Id])));
+    let query = { id: { $in: userIds }};
+
+    fetch(`${API}/users/?${JSON.stringify(query)}`)
+    .then(response => response.json())
+    .then(users => this.setState( {conversations, users, ready: true }))
+    .catch(err => this.ready(err))
+    .done();
+  }
+
+  _loadConversations() {
+    console.log(this.props);
+    let { currentUser } = this.props;
+    let query = {
+      $or: [
+        { user1Id: currentUser.id },
+        { user2Id: currentUser.id }
+      ],
+      $limit: 10, 
+      $sort: { lastMessageDate: -1 }
+    };
+
+    fetch(`${API}/conversations?${JSON.stringify(query)}`)
+    .then(response => response.json())
+    .then(conversations => this._loadUsers(conversations))
+    .catch(err => this.ready(err))
+    .done();
+  }
+
+  ready(err) {
+    this.setState({ ready: true });
   }
 
   render(){
     let titleConfig = { title: 'Messages', tintColor: 'white' };
     return (
-      <View style={globals.flexContainer}>
-        <NavigationBar
-          title={titleConfig}
-          tintColor={Colors.brandPrimary}
-        />
-        <ListView
-          dataSource={this.dataSource()}
-          contentInset={{ bottom: 49 }}
-          renderRow={this._renderRow}
-        />
-      </View>
-    )
+      <Navigator
+        style={globals.flex}
+        initialRoute={{ name: 'Conversations' }}
+        renderScene={(route, navigator) => {
+          switch(route.name){
+            case 'Conversations':
+              return (
+                <Conversations
+                  {...this.props}
+                  {...this.state}
+                  navigator={navigator}
+                />
+            );
+            case 'Conversation':
+              return (
+                <Conversation
+                  {...this.props}
+                  {...this.state}
+                  {...route}
+                  navigator={navigator}
+                />
+            );
+          }
+        }}
+      />
+    );
   }
 }
 

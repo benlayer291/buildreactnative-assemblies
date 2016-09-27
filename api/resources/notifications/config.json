@@ -1,0 +1,45 @@
+{
+	"type": "Collection",
+	"properties": {
+		"type": {
+			"name": "type",
+			"type": "string",
+			"typeLabel": "string",
+			"required": false,
+			"id": "type",
+			"order": 0
+		},
+		"message": {
+			"name": "message",
+			"type": "string",
+			"typeLabel": "string",
+			"required": false,
+			"id": "message",
+			"order": 1
+		},
+		"participants": {
+			"name": "participants",
+			"type": "array",
+			"typeLabel": "array",
+			"required": false,
+			"id": "participants",
+			"order": 2
+		},
+		"createdAt": {
+			"name": "createdAt",
+			"type": "number",
+			"typeLabel": "number",
+			"required": false,
+			"id": "createdAt",
+			"order": 3
+		},
+		"data": {
+			"name": "data",
+			"type": "object",
+			"typeLabel": "object",
+			"required": false,
+			"id": "data",
+			"order": 4
+		}
+	}
+}

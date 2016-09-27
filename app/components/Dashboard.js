@@ -50,7 +50,7 @@ class Dashboard extends Component {
           iconName='ios-chatboxes'
           onPress={() => this.setState({ selectedTab: 'Messages' })}
         >
-          <MessagesView />
+          <MessagesView currentUser={user}/>
         </TabBarItemIOS>
         <TabBarItemIOS
           title='Profile'
