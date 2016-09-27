@@ -39,7 +39,6 @@ class MessagesView extends Component{
   }
 
   _loadConversations() {
-    console.log(this.props);
     let { currentUser } = this.props;
     let query = {
       $or: [
