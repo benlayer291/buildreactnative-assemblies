@@ -12,6 +12,7 @@ import Config from 'react-native-config';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import NavigationBar from 'react-native-navbar';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { find, isEqual } from 'underscore';
 
 import BackButton from '../shared/BackButton';
 
@@ -41,11 +42,29 @@ class Register extends Component{
   }
 
   handleSubmit() {
-
+    this.props.navigator.push({
+      name: 'RegisterConfirmation',
+      ...this.state,
+    })
   }
 
-  selectLocation() {
+  selectLocation(data, details) {
+    if (!details) { return; }
 
+    let location = {
+      ...details.geometry.location,
+      city: find(details.address_components, (c) => (
+        isEqual(c.types[0], 'locality')
+      )),
+      state: find(details.address_components, (c) => (
+        isEqual(c.types[0], 'administrative_area_level_1')
+      )),
+      county: find(details.address_components, (c) => (
+        isEqual(c.types[0],'administrative_area_level_2')
+      )),
+      formattedAddress: details.formatted_address
+    };
+    this.setState({ location });
   }
 
   render(){

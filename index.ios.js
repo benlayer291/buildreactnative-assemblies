@@ -9,6 +9,7 @@ import {
 import Landing from './app/components/Landing';
 import Dashboard from './app/components/Dashboard';
 import Register from './app/components/accounts/Register';
+import RegisterConfirmation from './app/components/accounts/RegisterConfirmation';
 import Login from './app/components/accounts/Login';
 import { globals } from './app/styles';
 
