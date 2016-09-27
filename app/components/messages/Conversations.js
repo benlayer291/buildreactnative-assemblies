@@ -15,8 +15,6 @@ import moment from 'moment';
 import Icon from 'react-native-vector-icons/Ionicons';
 import NavigationBar from 'react-native-navbar';
 
-import { FakeConversations, FakeUsers, currentUser } from '../../fixtures';
-
 import { rowHasChanged } from '../../utilities';
 
 import Colors from '../../styles/colors';
@@ -32,9 +30,10 @@ class Conversations extends Component{
   }
 
   _renderRow(conversation) {
+    let { currentUser } = this.props;
     let userIDs = [ conversation.user1Id, conversation.user2Id];
     let otherUserID = find(userIDs, (id) => !isEqual(id, currentUser.id));
-    let user = find(FakeUsers, ({ id }) => isEqual(id, otherUserID));
+    let user = find(this.props.users, ({ id }) => isEqual(id, otherUserID));
 
     return (
       <TouchableOpacity style={globals.flexContainer}>
@@ -72,7 +71,7 @@ class Conversations extends Component{
   dataSource() {
     return(
       new ListView.DataSource({ rowHasChanged: rowHasChanged })
-      .cloneWithRows(FakeConversations)
+      .cloneWithRows(this.props.conversations)
     );
   }
 
@@ -85,6 +84,7 @@ class Conversations extends Component{
           tintColor={Colors.brandPrimary}
         />
         <ListView
+          enableEmptySections={true}
           dataSource={this.dataSource()}
           contentInset={{ bottom: 49 }}
           renderRow={this._renderRow}
