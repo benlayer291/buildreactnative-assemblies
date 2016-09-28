@@ -13,17 +13,27 @@ import { API, DEV } from '../../config';
 import Groups from './Groups';
 import CreateGroup from './CreateGroup';
 import CreateGroupConfirmation from './CreateGroupConfirmation';
+import Group from './Group';
 
 import { globals } from '../../styles';
 
 class GroupsView extends Component{
   constructor() {
     super();
+    this.addGroup = this.addGroup.bind(this);
     this.state ={
       groups: [],
       ready: false,
       suggestedGroups: [],
     }
+  }
+
+  addGroup(group) {
+    this.setState({
+      groups: [
+        ...this.state.groups, group
+      ]
+    });
   }
 
   componentWillMount() {
@@ -91,7 +101,15 @@ class GroupsView extends Component{
               return (
                 <CreateGroupConfirmation
                   {...this.props}
-                  {...this.state}
+                  {...route}
+                  navigator={navigator}
+                  addGroup={this.addGroup}
+                />
+            );
+            case 'Group':
+              return (
+                <Group
+                  {...this.props}
                   {...route}
                   navigator={navigator}
                 />
