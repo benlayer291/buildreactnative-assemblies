@@ -15,6 +15,8 @@ import moment from 'moment';
 import Icon from 'react-native-vector-icons/Ionicons';
 import NavigationBar from 'react-native-navbar';
 
+import Loading from '../shared/Loading';
+
 import { rowHasChanged } from '../../utilities';
 
 import Colors from '../../styles/colors';
@@ -79,14 +81,17 @@ class Conversations extends Component{
   }
 
   dataSource() {
-    return(
+    return (
       new ListView.DataSource({ rowHasChanged: rowHasChanged })
       .cloneWithRows(this.props.conversations)
     );
   }
 
-  render(){
+  render() {
+    if (!this.props.ready) { return <Loading /> }
+
     let titleConfig = { title: 'Messages', tintColor: 'white' };
+  
     return (
       <View style={globals.flexContainer}>
         <NavigationBar

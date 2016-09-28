@@ -11,6 +11,8 @@ import Headers from '../../fixtures';
 import { API, DEV } from '../../config';
 
 import Groups from './Groups';
+import CreateGroup from './CreateGroup';
+import CreateGroupConfirmation from './CreateGroupConfirmation';
 
 import { globals } from '../../styles';
 
@@ -73,6 +75,24 @@ class GroupsView extends Component{
                 <Groups
                   {...this.props}
                   {...this.state}
+                  navigator={navigator}
+                />
+            );
+            case 'CreateGroup':
+              return (
+                <CreateGroup
+                  {...this.props}
+                  {...this.state}
+                  {...route}
+                  navigator={navigator}
+                />
+            );
+            case 'CreateGroupConfirmation':
+              return (
+                <CreateGroupConfirmation
+                  {...this.props}
+                  {...this.state}
+                  {...route}
                   navigator={navigator}
                 />
             );
