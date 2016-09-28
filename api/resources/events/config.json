@@ -56,6 +56,14 @@
 			"required": false,
 			"id": "capacity",
 			"order": 6
+		},
+		"name": {
+			"name": "name",
+			"type": "string",
+			"typeLabel": "string",
+			"required": false,
+			"id": "name",
+			"order": 7
 		}
 	}
 }
