@@ -16,10 +16,11 @@ import CreateGroupConfirmation from './CreateGroupConfirmation';
 import Group from './Group';
 import CreateEvent from './CreateEvent';
 import CreateEventConfirmation from './CreateEventConfirmation';
+import Event from './Event';
 
 import { globals } from '../../styles';
 
-class GroupsView extends Component{
+class GroupsView extends Component {
   constructor() {
     super();
     this.addGroup = this.addGroup.bind(this);
@@ -180,6 +181,14 @@ class GroupsView extends Component{
                   navigator={navigator}
                 />
               );
+            case 'Event':
+              return (
+                <Event 
+                  {...this.props}
+                  {...route}
+                  navigator={navigator}
+                />
+            );
           }
         }}
       />
