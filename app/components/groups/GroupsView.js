@@ -21,6 +21,8 @@ class GroupsView extends Component{
   constructor() {
     super();
     this.addGroup = this.addGroup.bind(this);
+    this.addUserToGroup = this.addUserToGroup.bind(this);
+    this.unsubscribeFromGroup = this.unsubscribeFromGroup.bind(this);
     this.state ={
       groups: [],
       ready: false,
@@ -34,6 +36,47 @@ class GroupsView extends Component{
         ...this.state.groups, group
       ]
     });
+  }
+
+  addUserToGroup(group, currentUser) {
+    let { groups, suggestedGroups } = this.state;
+    let member = {
+      userId    : currentUser.id,
+      role      : 'member',
+      joinedAt  : new Date().valueOf(),
+      confirmed : true
+    };
+    if (! find(group.members, ({ userId}) => isEqual(userId, currentUser.id))){
+      group.members = [ ...group.members, member ];
+      groups = [ ...groups, group ];
+      suggestedGroups = suggestedGroups.filter(({ id }) => ! isEqual(id, group.id));
+
+      this.setState({ groups, suggestedGroups })
+      this.updateGroup(group);
+    }
+  }
+
+  unsubscribeFromGroup(group, currentUser) {
+    let { groups, suggestedGroups } = this.state;
+
+    group.members = group.members.filter(({ userId }) => ! isEqual(userId, currentUser.id));
+    groups = groups.filter(({ id }) => ! isEqual(id, group.id));
+    suggestedGroups = [ ...suggestedGroups, group ];
+
+    this.setState({ groups, suggestedGroups });
+    this.updateGroup(group);
+  }
+
+  updateGroup(group) {
+    fetch(`${API}/groups/${group.id}`, {
+      method: 'PUT',
+      headers: Headers,
+      body: JSON.stringify(group)
+    })
+    .then(response => response.json())
+    .then(data => {})
+    .catch(err => {})
+    .done();
   }
 
   componentWillMount() {
@@ -73,7 +116,7 @@ class GroupsView extends Component{
     this.setState({ ready: true });
   }
 
-  render(){
+  render() {
     return (
       <Navigator
         style={globals.flex}
@@ -112,6 +155,8 @@ class GroupsView extends Component{
                   {...this.props}
                   {...route}
                   navigator={navigator}
+                  addUserToGroup={this.addUserToGroup}
+                  unsubscribeFromGroup={this.unsubscribeFromGroup}
                 />
             );
           }

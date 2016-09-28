@@ -25,6 +25,14 @@ import { globals, groupsStyles } from '../../styles';
 
 const styles = groupsStyles;
 
+const OptionsButton = ({ openActionSheet }) => {
+  return (
+    <TouchableOpacity style={globals.pa1} onPress={openActionSheet}>
+      <Icon name="ios-more" size={25} color="#ccc" />
+    </TouchableOpacity>
+  );
+}
+
 function isMember(group, currentUser) {
   return findIndex(group.members, ({ userId }) => isEqual(userId, currentUser.id)) !== -1;
 };
@@ -92,6 +100,9 @@ class Group extends Component {
     super();
     this.goBack = this.goBack.bind(this);
     this.visitProfile = this.visitProfile.bind(this);
+    this.visitCreateEvent = this.visitCreateEvent.bind(this);
+    this.openActionSheet = this.openActionSheet.bind(this);
+
     this.state = {
       events    : [],
       ready     : false,
@@ -136,16 +147,52 @@ class Group extends Component {
     })
   }
 
+  openActionSheet() {
+    let { group, currentUser } = this.props;
+    let member = find(group.members, ({ userId }) => isEqual(userId, currentUser.id));
+    let buttonActions = ['Unsubscribe', 'Cancel'];
+
+    if (member && member.role === 'owner') {
+      buttonActions.unshift('CreateEvent');
+    }
+
+    let options = {
+      options: buttonActions,
+      cancelButtonIndex: buttonActions.length -1
+    }
+
+    ActionSheetIOS.showActionSheetWithOptions(options, (buttonIndex) => {
+      switch(buttonActions[buttonIndex]){
+        case 'Unsubscribe':
+          this.props.unsubscribeFromGroup(group, currentUser);
+          break;
+        case 'Create Event':
+          this.visitCreateEvent(group);
+          break;
+        default:
+          return;
+      }
+    });
+  }
+
+  visitCreateEvent() {
+    this.props.navigator.push({
+      name: 'CreateEvent',
+      group
+    })
+  }
+
   render() {
     let { group, currentUser } = this.props;
     let showButton = showJoinButton(this.state.users, currentUser) && this.state.ready;
-    
+
     return (
       <View style={globals.flexContainer}>
         <NavigationBar
           title={{title: group.name, tintColor: 'white'}}
           tintColor={Colors.brandPrimary}
           leftButton={<BackButton handlePress={this.goBack}/>}
+          rightButton={<OptionsButton openActionSheet={this.openActionSheet}/>}
         />
         <ScrollView style={globals.flex}>
           <Image source={{uri: group.image}} style={styles.groupTopImage}>
