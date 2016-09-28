@@ -6,7 +6,8 @@ import {
   View,
   ScrollView,
   TextInput,
-  TouchableOpacity
+  TouchableOpacity,
+  AsyncStorage,
 } from 'react-native';
 
 import { extend } from 'underscore';
@@ -69,6 +70,9 @@ class Login extends Component{
 
   fetchUserInfo(sid){
     if (DEV) { console.log('Getting current user info', sid) }
+    // store user session id in 'localStorage'  
+    AsyncStorage.setItem('sid', sid);
+
     fetch(`${API}/users/me`, { 
       method: 'GET',
       headers: extend(Headers, { 'Set-Cookie': `sid=${sid}`}) 
