@@ -84,7 +84,7 @@ class Assemblies extends Component {
 
   render() {
     if ( !this.state.ready ) { return <Loading /> };
-    console.log('INITIAL ROUTE', this.state.initialRoute);
+
     return (
       <Navigator
         style={globals.flex}
