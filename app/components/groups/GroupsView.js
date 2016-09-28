@@ -14,6 +14,8 @@ import Groups from './Groups';
 import CreateGroup from './CreateGroup';
 import CreateGroupConfirmation from './CreateGroupConfirmation';
 import Group from './Group';
+import CreateEvent from './CreateEvent';
+import CreateEventConfirmation from './CreateEventConfirmation';
 
 import { globals } from '../../styles';
 
@@ -159,6 +161,23 @@ class GroupsView extends Component{
                   unsubscribeFromGroup={this.unsubscribeFromGroup}
                 />
             );
+            case 'CreateEvent':
+              return (
+                <CreateEvent
+                  {...this.props}
+                  {...route}
+                  navigator={navigator}
+                />
+            );
+            case 'CreateEventConfirmation':
+              return (
+                <CreateEventConfirmation
+                  {...this.props}
+                  {...this.state}
+                  {...route}
+                  navigator={navigator}
+                />
+              );
           }
         }}
       />

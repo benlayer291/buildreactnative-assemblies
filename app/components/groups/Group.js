@@ -153,7 +153,7 @@ class Group extends Component {
     let buttonActions = ['Unsubscribe', 'Cancel'];
 
     if (member && member.role === 'owner') {
-      buttonActions.unshift('CreateEvent');
+      buttonActions.unshift('Create Event');
     }
 
     let options = {
@@ -167,6 +167,7 @@ class Group extends Component {
           this.props.unsubscribeFromGroup(group, currentUser);
           break;
         case 'Create Event':
+        console.log('Create Event');
           this.visitCreateEvent(group);
           break;
         default:
@@ -175,7 +176,7 @@ class Group extends Component {
     });
   }
 
-  visitCreateEvent() {
+  visitCreateEvent(group) {
     this.props.navigator.push({
       name: 'CreateEvent',
       group
