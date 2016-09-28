@@ -1,6 +1,7 @@
 package com.assemblies;
 
 import com.facebook.react.ReactActivity;
+import com.beefe.picker.PickerViewPackage;
 import com.imagepicker.ImagePickerPackage;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.oblador.vectoricons.VectorIconsPackage;

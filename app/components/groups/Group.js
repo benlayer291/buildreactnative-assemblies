@@ -1,7 +1,8 @@
 'use strict';
 
 import React, { Component } from 'react';
-import { View, 
+import { 
+  View, 
   ListView, 
   ScrollView, 
   TouchableOpacity, 
@@ -12,6 +13,7 @@ import { View,
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import NavigationBar from 'react-native-navbar';
+import Swipe from 'react-native-swipe';
 
 import moment from 'moment';
 import { find, findIndex, isEqual } from 'underscore';
@@ -48,41 +50,60 @@ class EventList extends Component {
     this._renderRow = this._renderRow.bind(this);
   }
 
+  getButtons(isGoing, event, currentUser){
+    if (isGoing){
+      return [{
+        text: 'Cancel',
+        type: 'delete',
+        onPress: () => { this.props.cancelRSVP(event, currentUser) }
+      }];
+    } else {
+      return [{
+        text: 'RSVP',
+        type: 'primary',
+        onPress: () => { this.props.joinEvent(event, currentUser) }
+      }];
+    }
+  }
+
   _renderRow(event, sectionId, rowId) {
     let { currentUser, events, group } = this.props;
     let isGoing = find(event.going, (id) => isEqual(id, currentUser.id));
-
+    let right = this.getButtons(isGoing, event, currentUser);
     return (
-      <View style={styles.eventContainer}>
-        <TouchableOpacity
-          style={globals.flex}
-          onPress={() => this.props.visitEvent(event)}
-        >
-          <Text style={globals.h5}>
-            {event.name}
-          </Text>
-          <Text style={styles.h4}>
-            {moment(event.start).format('dddd, MMM Do')}
-          </Text>
-          <Text style={styles.h4}>
-            {event.going.length} Going
-          </Text>
-        </TouchableOpacity>
-        <View style={[globals.flexRow, globals.pa1]}>
-          <Text style={[globals.primaryText, styles.h4, globals.ph1]}>
-            {isGoing ? "You're Going" : "Want to go?"}
-          </Text>
-          <Icon
-            name={ isGoing ? "ios-checkmark" : "ios-add" }
-            size={30}
-            color={Colors.brandPrimary}
-          />
+      <Swipe right= {right}>
+        <View style={styles.eventContainer}>
+          <TouchableOpacity
+            style={globals.flex}
+            onPress={() => this.props.visitEvent(event)}
+          >
+            <Text style={globals.h5}>
+              {event.name}
+            </Text>
+            <Text style={styles.h4}>
+              {moment(event.start).format('dddd, MMM Do')}
+            </Text>
+            <Text style={styles.h4}>
+              {event.going.length} Going
+            </Text>
+          </TouchableOpacity>
+          <View style={[globals.flexRow, globals.pa1]}>
+            <Text style={[globals.primaryText, styles.h4, globals.ph1]}>
+              {isGoing ? "You're Going" : "Want to go?"}
+            </Text>
+            <Icon
+              name={ isGoing ? "ios-checkmark" : "ios-add" }
+              size={30}
+              color={Colors.brandPrimary}
+            />
+          </View>
         </View>
-      </View>
+      </Swipe>
     );
   }
 
   dataSource(){
+    console.log('!!!!!!!!', this.props.events);
     return (
       new ListView.DataSource({ rowHasChanged })
         .cloneWithRows(this.props.events)
@@ -90,6 +111,7 @@ class EventList extends Component {
   }
 
   render() {
+    console.log('******', this.props);
     if (! this.props.events.length ){ 
       return (
         <Text style={[globals.h5, globals.mh2]}>
@@ -97,7 +119,7 @@ class EventList extends Component {
         </Text>
       )
     }
-    
+
     return (
       <ListView
         enableEmptySections={true}
@@ -157,8 +179,11 @@ class Group extends Component {
     super();
     this.goBack = this.goBack.bind(this);
     this.visitProfile = this.visitProfile.bind(this);
+    this.visitEvent = this.visitEvent.bind(this);
     this.visitCreateEvent = this.visitCreateEvent.bind(this);
     this.openActionSheet = this.openActionSheet.bind(this);
+    this.cancelRSVP = this.cancelRSVP.bind(this);
+    this.joinEvent = this.joinEvent.bind(this);
 
     this.state = {
       events    : [],
@@ -219,6 +244,15 @@ class Group extends Component {
     })
   }
 
+  visitEvent(event){
+    this.props.navigator.push({
+      name: 'Event',
+      group: this.props.group,
+      updateEvents: this.updateEvents,
+      event,
+    })
+  }
+
   openActionSheet() {
     let { group, currentUser } = this.props;
     let member = find(group.members, ({ userId }) => isEqual(userId, currentUser.id));
@@ -247,11 +281,62 @@ class Group extends Component {
     });
   }
 
-  visitCreateEvent(group) {
-    this.props.navigator.push({
-      name: 'CreateEvent',
-      group
+  joinEvent(event, currentUser) {
+    let { events } = this.state;
+    let updatedEvent = {
+      ...event,
+      going: [ ...event.going, currentUser.id ]
+    };
+    let index = findIndex(this.state.events, ({ id }) => isEqual(id, event.id));
+    let updatedEvents = [
+      ...events.slice(0, index),
+      updatedEvent,
+      ...events.slice(index + 1)
+    ];
+
+    this.setState({ events: updatedEvents })
+    this.updateEventGoing(event);
+  }
+
+  cancelRSVP(event, currentUser){
+    let { events } = this.state;
+    let updatedEvent = {
+      ...event,
+      going: event.going.filter((userId) => ! isEqual(userId, currentUser.id))
+    };
+    let index = findIndex(this.state.events, ({ id }) => isEqual(id, event.id));
+    let updatedEvents = [
+      ...events.slice(0, index),
+      updatedEvent,
+      ...events.slice(index + 1)
+    ];
+    this.setState({ events: updatedEvents })
+    this.updateEventGoing(event);
+  }
+
+  updateEvents(event){
+    let { events } = this.state;
+    let idx = findIndex(this.state.events, ({ id }) => isEqual(id, event.id));
+    let updatedEvents = [
+      ...events.slice(0, idx),
+      event,
+      ...events.slice(idx + 1)
+    ];
+    this.setState({ events: updatedEvents })
+  }
+
+  updateEventGoing(event){
+    fetch(`${API}/events/${event.id}`, {
+      method: 'PUT',
+      headers: Headers,
+      body: JSON.stringify({
+        going: event.going
+      })
     })
+    .then(response => response.json())
+    .then(data => {})
+    .catch(err => {})
+    .done();
   }
 
   render() {
@@ -286,7 +371,10 @@ class Group extends Component {
           <Text style={styles.h2}>Events</Text>
           <EventList
             {...this.props}
-            {...this.state} 
+            {...this.state}
+            visitEvent={this.visitEvent}
+            joinEvent={this.joinEvent}
+            cancelRSVP={this.cancelRSVP} 
           />
           <View style={globals.lightDivider} />
           <Text style={styles.h2}>Members</Text>

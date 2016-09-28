@@ -73,7 +73,9 @@ class GroupsView extends Component{
     fetch(`${API}/groups/${group.id}`, {
       method: 'PUT',
       headers: Headers,
-      body: JSON.stringify(group)
+      body: JSON.stringify({ 
+        members: group.members 
+      })
     })
     .then(response => response.json())
     .then(data => {})
